@@ -1,0 +1,135 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Rol {
+  DUENO
+  PRESTADOR
+  ADMIN
+}
+
+enum TipoServicio {
+  PASEO
+  GUARDERIA
+  HOSPEDAJE
+  ADIESTRAMIENTO
+}
+
+enum EstadoReserva {
+  PENDIENTE
+  CONFIRMADA
+  CANCELADA
+}
+
+enum TamanioMascota {
+  PEQUENO
+  MEDIANO
+  GRANDE
+}
+
+model Usuario {
+  id            Int      @id @default(autoincrement())
+  nombre        String
+  email         String   @unique
+  password      String
+  foto          String?
+  ubicacion     String?
+  lat           Float?
+  lng           Float?
+  telefono      String?
+  descripcion   String?
+  rol           Rol
+  aprobado      Boolean  @default(false)
+  creadoEn      DateTime @default(now())
+  actualizadoEn DateTime @updatedAt
+
+  mascotas          Mascota[]
+  servicios         Servicio[]
+  reservasDueno     Reserva[]  @relation("ReservasDueno")
+  reservasPrestador Reserva[]  @relation("ReservasPrestador")
+  reviewsEscritas   Review[]   @relation("ReviewsEscritas")
+  reviewsRecibidas  Review[]   @relation("ReviewsRecibidas")
+
+  @@map("usuarios")
+}
+
+model Mascota {
+  id       Int            @id @default(autoincrement())
+  nombre   String
+  raza     String?
+  tamanio  TamanioMascota
+  foto     String?
+  creadoEn DateTime       @default(now())
+
+  dueno   Usuario @relation(fields: [duenoId], references: [id], onDelete: Cascade)
+  duenoId Int
+
+  reservas Reserva[]
+
+  @@map("mascotas")
+}
+
+model Servicio {
+  id          Int          @id @default(autoincrement())
+  tipo        TipoServicio
+  precio      Decimal      @db.Decimal(10, 2)
+  duracion    Int
+  descripcion String?
+  activo      Boolean      @default(true)
+  creadoEn    DateTime     @default(now())
+
+  prestador   Usuario @relation(fields: [prestadorId], references: [id], onDelete: Cascade)
+  prestadorId Int
+
+  reservas Reserva[]
+
+  @@map("servicios")
+}
+
+model Reserva {
+  id            Int           @id @default(autoincrement())
+  fecha         DateTime
+  estado        EstadoReserva @default(PENDIENTE)
+  precioTotal   Decimal       @db.Decimal(10, 2)
+  notas         String?
+  creadoEn      DateTime      @default(now())
+  actualizadoEn DateTime      @updatedAt
+
+  dueno       Usuario @relation("ReservasDueno", fields: [duenoId], references: [id])
+  duenoId     Int
+  prestador   Usuario @relation("ReservasPrestador", fields: [prestadorId], references: [id])
+  prestadorId Int
+  mascota     Mascota @relation(fields: [mascotaId], references: [id])
+  mascotaId   Int
+  servicio    Servicio @relation(fields: [servicioId], references: [id])
+  servicioId  Int
+
+  review Review?
+
+  @@index([duenoId])
+  @@index([prestadorId])
+  @@index([estado])
+  @@map("reservas")
+}
+
+model Review {
+  id          Int      @id @default(autoincrement())
+  puntuacion  Int
+  comentario  String?
+  creadoEn    DateTime @default(now())
+
+  autor       Usuario @relation("ReviewsEscritas", fields: [autorId], references: [id])
+  autorId     Int
+  prestador   Usuario @relation("ReviewsRecibidas", fields: [prestadorId], references: [id])
+  prestadorId Int
+  reserva     Reserva @relation(fields: [reservaId], references: [id])
+  reservaId   Int     @unique
+
+  @@index([prestadorId])
+  @@map("reviews")
+}

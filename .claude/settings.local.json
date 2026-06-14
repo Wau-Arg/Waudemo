@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(claude.exe mcp *)",
+      "PowerShell(claude mcp add --scope project --transport http supabase \"https://mcp.supabase.com/mcp?project_ref=jsaqoihjjwkwrvsqdqyw\" 2>&1)",
+      "PowerShell(Get-ChildItem \"$env:LOCALAPPDATA\\\\AnthropicClaude\" -Recurse -Filter \"claude.exe\" -ErrorAction SilentlyContinue | Select-Object FullName)",
+      "Read(//mnt/c/Users/Sale Foto!/Desktop/WAU/**)",
+      "Bash(npm install *)",
+      "Bash(cd \"/mnt/c/Users/Sale Foto\\\\!/Desktop/WAU/backend\" && npm install 2>&1 || node --version 2>&1 || which node 2>&1)",
+      "PowerShell($env:PATH += \";C:\\\\Program Files\\\\nodejs\"; Set-Location \"C:\\\\Users\\\\Sale Foto!\\\\Desktop\\\\WAU\\\\frontend\"; npm install 2>&1)",
+      "Bash(mkdir -p \"/mnt/c/Users/Sale Foto!/Desktop/WAU/backend/src/routes\" \"/mnt/c/Users/Sale Foto!/Desktop/WAU/backend/src/controllers\" \"/mnt/c/Users/Sale Foto!/Desktop/WAU/frontend/src/components\" \"/mnt/c/Users/Sale Foto!/Desktop/WAU/frontend/src/pages\" \"/mnt/c/Users/Sale Foto!/Desktop/WAU/frontend/src/services\" && echo \"ok\")"
+    ]
+  }
+}
