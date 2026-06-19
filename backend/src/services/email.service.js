@@ -1,9 +1,7 @@
-const { Resend } = require('resend');
-
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 const enviarEmailReserva = async (reserva) => {
   if (!process.env.RESEND_API_KEY) return; // Skip si no está configurado
+  const { Resend } = require('resend');
+  const resend = new Resend(process.env.RESEND_API_KEY);
 
   await resend.emails.send({
     from: 'WAU <noreply@wau.com.ar>',
